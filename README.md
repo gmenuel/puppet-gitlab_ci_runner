@@ -23,6 +23,8 @@ Here is an example how to configure Gitlab CI runners using Hiera:
 
 To use the Gitlab CI runners it is required to have the [puppetlabs/docker](https://forge.puppetlabs.com/puppetlabs/docker) module.
 
+For windows the [puppetlabs/chocolatey](https://forge.puppetlabs.com/puppetlabs/chocolatey) module is required and the chocolatey class must be included.
+
 `$manage_docker` can be set to false if docker is managed externally.
 
 ```yaml
@@ -121,6 +123,7 @@ The Gitlab CI runner installation is at the moment only tested on:
 * CentOS 7/8
 * Debian 9/10
 * Ubuntu 18.04/20.04
+* Windows Server 2019
 
 It is currently not possible to alter registration specific configuration settings after a runner is registered.
 

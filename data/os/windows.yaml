@@ -1,0 +1,7 @@
+gitlab_ci_runner::package_provider: chocolatey
+gitlab_ci_runner::xz_package_name: []
+gitlab_ci_runner::manage_repo: false
+gitlab_ci_runner::config_path: C:/gitlab-runner/config.toml
+gitlab_ci_runner::config_owner: S-1-5-32-544
+gitlab_ci_runner::config_group: S-1-5-32-544
+gitlab_ci_runner::docker_images: {}

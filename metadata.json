@@ -66,6 +66,14 @@
         "18.04",
         "20.04"
       ]
+    },
+    {
+      "operatingsystem": "windows",
+      "operatingsystemrelease": [
+        "2016",
+        "2019",
+        "2022"
+      ]
     }
   ],
   "requirements": [

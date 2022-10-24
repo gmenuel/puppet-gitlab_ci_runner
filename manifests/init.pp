@@ -33,6 +33,8 @@
 #   Session server lets users interact with jobs, for example, in the interactive web terminal.
 # @param manage_docker
 #   If docker should be installs (uses the puppetlabs-docker).
+# @param docker_images
+#   Docker images to pull, using the docker::images resource from puppetlabs-docker
 # @param manage_repo
 #   If the repository should be managed.
 # @param package_ensure
@@ -74,42 +76,36 @@
 #   Using the CA file solves https://github.com/voxpupuli/puppet-gitlab_ci_runner/issues/124.
 #
 class gitlab_ci_runner (
-  String                                     $xz_package_name, # Defaults in module hieradata
-  Hash                                       $runners         = {},
-  Hash                                       $runner_defaults = {},
-  Optional[Integer]                          $concurrent      = undef,
-  Optional[Gitlab_ci_runner::Log_level]      $log_level       = undef,
-  Optional[Gitlab_ci_runner::Log_format]     $log_format      = undef,
-  Optional[Integer]                          $check_interval  = undef,
-  Optional[String]                           $sentry_dsn      = undef,
-  Optional[Pattern[/.*:.+/]]                 $listen_address  = undef,
-  Optional[Gitlab_ci_runner::Session_server] $session_server  = undef,
-  Boolean                                    $manage_docker   = false,
-  Boolean                                    $manage_repo     = true,
-  String                                     $package_ensure  = installed,
-  String                                     $package_name    = 'gitlab-runner',
-  Stdlib::HTTPUrl                            $repo_base_url   = 'https://packages.gitlab.com',
-  Optional[Gitlab_ci_runner::Keyserver]      $repo_keyserver  = undef,
-  String                                     $config_path     = '/etc/gitlab-runner/config.toml',
-  String[1]                                  $config_owner    = 'root',
-  String[1]                                  $config_group    = 'root',
-  Stdlib::Filemode                           $config_mode     = '0444',
+  Variant[String,Array[String]]              $xz_package_name, # Defaults in module hieradata
+  Hash[String,Hash[String,String]]           $docker_images,   # Defaults in module hieradata
+  Hash                                       $runners           = {},
+  Hash                                       $runner_defaults   = {},
+  Optional[Integer]                          $concurrent        = undef,
+  Optional[Gitlab_ci_runner::Log_level]      $log_level         = undef,
+  Optional[Gitlab_ci_runner::Log_format]     $log_format        = undef,
+  Optional[Integer]                          $check_interval    = undef,
+  Optional[String]                           $sentry_dsn        = undef,
+  Optional[Pattern[/.*:.+/]]                 $listen_address    = undef,
+  Optional[Gitlab_ci_runner::Session_server] $session_server    = undef,
+  Boolean                                    $manage_docker     = false,
+  Boolean                                    $manage_repo       = true,
+  String                                     $package_ensure    = installed,
+  String                                     $package_name      = 'gitlab-runner',
+  Stdlib::HTTPUrl                            $repo_base_url     = 'https://packages.gitlab.com',
+  Optional[Gitlab_ci_runner::Keyserver]      $repo_keyserver    = undef,
+  String                                     $config_path       = '/etc/gitlab-runner/config.toml',
+  String[1]                                  $config_owner      = 'root',
+  String[1]                                  $config_group      = 'root',
+  Stdlib::Filemode                           $config_mode       = '0444',
   Boolean                                    $manage_config_dir = false,
-  Optional[Stdlib::Filemode]                 $config_dir_mode = undef,
-  Optional[Stdlib::HTTPUrl]                  $http_proxy      = undef,
-  Optional[Stdlib::Unixpath]                 $ca_file         = undef,
+  Optional[Stdlib::Filemode]                 $config_dir_mode   = undef,
+  Optional[Stdlib::HTTPUrl]                  $http_proxy        = undef,
+  Optional[Stdlib::Unixpath]                 $ca_file           = undef,
 ) {
   if $manage_docker {
     # workaround for cirunner issue #1617
     # https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/issues/1617
     ensure_packages($xz_package_name)
-
-    $docker_images = {
-      ubuntu_focal => {
-        image     => 'ubuntu',
-        image_tag => 'focal',
-      },
-    }
 
     include docker
     class { 'docker::images':

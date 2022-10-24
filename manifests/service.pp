@@ -7,8 +7,15 @@ class gitlab_ci_runner::service (
 ) {
   assert_private()
 
+  if $facts['osfamily'] == 'windows' {
+    $service_enable = 'delayed'
+  }
+  else {
+    $service_enable = true
+  }
+
   service { $package_name:
     ensure => running,
-    enable => true,
+    enable => $service_enable,
   }
 }
